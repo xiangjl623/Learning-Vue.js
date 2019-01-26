@@ -1,0 +1,29 @@
+<data>
+    <script src="../../common/js/vue.js"></script>
+	<ul id="v-for-object" class="demo">
+	  <p>1. 用 v-for 通过一个对象的属性来迭代:</p>
+	  <li v-for="value in object">
+		    {{ value }}
+	  </li>
+	  <p>2. 提供第二个的参数为键名：</p>
+	  <div v-for="(value, key) in object">
+		    {{ key }}: {{ value }}
+	  </div>
+	  <p>3. 第三个参数为索引：</p>
+	  <div v-for="(value, key, index) in object">
+			{{ index }}. {{ key }}: {{ value }}
+	  </div>
+	</ul>
+	<script>
+		new Vue({
+		  el: '#v-for-object',
+		  data: {
+			object: {
+			  firstName: 'John',
+			  lastName: 'Doe',
+			  age: 30
+			}
+		  }
+		})
+	</script>
+</data>

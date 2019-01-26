@@ -1,0 +1,17 @@
+<data>
+    <script src="../../common/js/vue.js"></script>
+	<div id="example-3">
+	  <button v-on:click="say('hi')">Say hi</button>
+	  <button v-on:click="say('what')">Say what</button>
+	</div>
+	<script>
+	  var example3 = new Vue({
+		  el: '#example-3',
+		  methods: {
+			say: function (message) {
+			  alert(message)
+			}
+		  }
+		})
+	</script>
+</data>

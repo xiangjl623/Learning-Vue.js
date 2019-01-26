@@ -1,0 +1,17 @@
+<data>
+    <script src="../../../common/js/vue.js"></script>
+	<div id="example"> 
+		Length: {{ items.length }} 
+		items[1]: {{ items[1] }}
+	</ul>
+	<script>
+	 var vm = new Vue({
+	   el: '#example',
+	   data: {
+		 items: ['a', 'b', 'c']
+	   }
+	})
+	vm.items[1] = 'xxx' // 不是响应性的
+	vm.items.length = 2 // 不是响应性的
+	</script>
+</data>

@@ -1,0 +1,15 @@
+<data>
+    <script src="../../../common/js/vue.js"></script>
+	<div id="example">
+		<input v-model="message" placeholder="edit me">
+        <p>Message is: {{ message }}</p>
+	</div>
+	<script>
+	  var example= new Vue({
+		  el: '#example',
+		  data:{
+		     message: ''
+		  }
+		})
+	</script>
+</data>

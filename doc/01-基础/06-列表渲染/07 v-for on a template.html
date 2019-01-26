@@ -1,0 +1,24 @@
+<data>
+    <script src="../../common/js/vue.js"></script>
+	
+	<div id ="example">
+	  <ul>
+		  <template v-for="item in items">
+			<li>{{ item.msg }}</li>
+			<li class="divider" role="presentation"></li>
+		  </template>
+	  </ul>
+	</div>
+	<script>
+		var vm = new Vue({
+		   el: '#example',
+		   data:{
+		      items:[
+				  {msg:'A'},
+				  {msg:'B'},
+				  {msg:'C'}
+			  ]
+		   }
+		})
+	</script>
+</data>
