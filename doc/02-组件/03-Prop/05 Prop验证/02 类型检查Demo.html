@@ -1,0 +1,27 @@
+<data>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
+    <script src="../../../common/js/vue.js"></script>
+    <!--HTML 中的特性名是大小写不敏感的，所以浏览器会把所有大写字符解释为小写字符。这意味着当你使用 DOM 中的模板时，camelCase (驼峰命名法) 的 prop 名需要使用其等价的 kebab-case (短横线分隔命名) 命名：-->
+	   <!-- 在 HTML 中是 kebab-case 的 -->
+	   <div id="components-demo">  
+			<blog-post v-bind:author='author'></blog-post>		
+	   </div>
+	<script>
+	    function Person(firstName, lastName)
+		{
+		   this.firstName = firstName;
+		   this.lastName = lastName;
+		}
+	    // 定义一个名为 button-counter 的新组件
+		Vue.component('blogPost', {
+		  // 在 JavaScript 中是 camelCase 的
+		  props: { author: Person }
+		})
+		new Vue({ 
+			   el: '#components-demo', 
+			   data:{
+			     post:{title: 'Hello, Vue.js', author: Person('Vue', 'js')}
+			   }
+		});
+	</script>
+</data>
