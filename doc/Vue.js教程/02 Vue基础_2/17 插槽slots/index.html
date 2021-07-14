@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .panel{
+            max-width: 300px;
+            border: 1px solid black;
+            margin-bottom: 20px;
+        }
+
+        .panel > * {
+            padding: 15px;
+        }
+
+        .panel .title {
+            border-bottom: 1px solid black;
+        }
+
+        .panel .footer {
+            border-top: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+          <panel>
+              <div slot="title">title A</div>
+          </panel>
+          <panel>
+              <div slot="title">title B</div>
+              <div slot="content">Content B</div>
+          </panel>
+    </div>
+    <template id="panel-template">
+              <div class="panel">
+                    <div class="title">
+                        <slot name="title">title</slot>
+                    </div>
+                    <div class="content">
+                        <slot name="content">我听见回声，来自山谷和心间
+                            以寂寞的镰刀收割空旷的灵魂
+                            不断地重复决绝，又重复幸福
+                            终有绿洲摇曳在沙漠
+                            我相信自己
+                            生来如同璀璨的夏日之花
+                            不凋不败，妖冶如火
+                            承受心跳的负荷和呼吸的累赘
+                            乐此不疲</slot>
+                    </div>
+                    <div class="footer">
+                        <slot name="footer">更多内容</slot>
+                    </div>
+              </div>
+    </template>
+<script src="../lib/vue.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

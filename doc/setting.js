@@ -88,4 +88,6 @@ var zNodes =[
    { id:87,  pId:85,  name:"类型检查Demo", file:"02-组件/03-Prop/05 Prop验证/02 类型检查Demo.html"},
    { id:88,  pId:80,  name:"非Prop的特性", file:"02-组件/03-Prop/06 非Prop的特性/00 非Prop的特性.png"},
    { id:89,  pId:88,  name:"替换 Or 合并已有的特性", file:"02-组件/03-Prop/06 非Prop的特性/02 替换 Or 合并已有的特性.png"},
-   { id:90,  pId:88,  name:"禁用特性继承", file:"02-组件/03-Prop/06 非Prop的特性/03 禁用特性继承.png"}]
+   { id:90,  pId:88,  name:"禁用特性继承", file:"02-组件/03-Prop/06 非Prop的特性/03 禁用特性继承.png"},
+   { id:91,  pId:67,  name:"自定义组件", file:""},
+   { id:92,  pId:91,  name:"事件名", file:"02-组件/04-自定义组件/01 事件名.png"}]

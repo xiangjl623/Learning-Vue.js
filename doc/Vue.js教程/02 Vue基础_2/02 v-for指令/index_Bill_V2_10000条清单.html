@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+	<style>
+            table{ font-family:Arial, Helvetica, sans-serif; border-collapse: collapse;width:80%;table-layout: fixed;}
+            th, td{ border: 1px solid #ddd; padding: 8px;}
+            tr:nth-child(even){ background-color: #f2f2f2; }
+            tr:hover{ background-color: #ddd; }
+            p{ word-wrap: break-word;word-break: break-all;overflow: hidden;display: block;display: block;}
+            th{ padding-top: 12px;padding-bottom: 12px;text-align: left;background-color: #4CAF50;color: white; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <table cellspacing="2">
+	    <tr>
+		    <th>ID</th> 
+			<th>PID</th> 
+			<th>QTY</th> 
+			<th>Rate</th> 
+			<th>Amount</th> 
+			<th>AdjRatio</th> 
+            <th>AdjAmount</th> 
+            <th>MarkupRatio</th> 
+            <th>MarkupAmount</th> 			
+		<tr>
+	    <tr v-for="billitem in BillItemList">
+		    <td>{{billitem.id}}</td> 
+			<td>{{billitem.pid}}</td> 
+			<td>{{billitem.qty}}</td> 
+			<td>{{billitem.rate}}</td> 
+			<td>{{billitem.amount}}</td>  
+			<td>{{billitem.adjRatio}}</td>  
+            <td>{{billitem.adjAmount}}</td>
+            <td>{{billitem.markupRatio}}</td>  
+            <td>{{billitem.markupAmount}}</td> 				
+        </tr>
+    </table>
+</div>
+<script src="../lib/vue.js"></script>
+<script>
+
+/**
+ * 打印日志
+ */
+function printLog(log)
+{   
+	return;
+	console.log(log)
+}
+
+/**
+ * 定义一个“依赖收集器”
+ */
+
+class Dep {
+  constructor () {
+    this.deps = []
+  }
+
+  depend () {
+    if (Dep.target.length > 0 && this.deps.indexOf(Dep.target[Dep.target.length - 1]) === -1) {
+      this.deps.push(Dep.target[Dep.target.length - 1])  
+    }
+	printLog(this.deps)
+  }
+
+  notify () {
+    printLog(this.deps)
+    this.deps.forEach((dep) => {
+      dep()
+    })
+  }
+}
+
+Dep.target = []
+
+/**
+ * 使一个对象转化成可观测对象
+ * @param { Object } obj 对象
+ * @param { String } key 对象的key
+ * @param { Any } val 对象的某个key的值
+ */
+class Observable {
+  constructor (obj) {
+    return this.walk(obj)
+  }
+
+  walk (obj) {
+    const keys = Object.keys(obj)
+    keys.forEach((key) => {
+	  if (key != "id" && key!= "childs") {
+	     this.defineReactive(obj, key, obj[key])
+	  } 
+    })
+    return obj
+  }
+
+  defineReactive (obj, key, val) {
+    const dep = new Dep()
+    Object.defineProperty(obj, key, {
+      get () {
+	    printLog(`get ${obj.id} : ${key} : ${val}`)
+        dep.depend()
+        return val
+      },
+      set (newVal) {
+        val = newVal
+		printLog(`set ${obj.id} : ${key} : ${val}`) 
+        dep.notify()
+      },
+	  depX: dep
+    })
+  }
+}
+
+/**
+ * 观测者
+ * @param { Object } obj 被观测对象
+ * @param { String } key 被观测对象的key
+ * @param { Function } cb 回调函数，返回“计算属性”的值
+ * @param { Function } onComputedUpdate 回调函数，返回“计算属性”的更新内容
+ */
+class Watcher {
+  constructor (obj, key, cb, onComputedUpdate) {
+    this.obj = obj
+    this.key = key
+    this.cb = cb
+    this.onComputedUpdate = onComputedUpdate
+    return this.defineComputed()
+  }
+
+  defineComputed () {
+    const self = this
+	var val = self.obj[self.key]
+    const onDepUpdated = () => {
+      //val = self.cb()
+	  this.obj[this.key] = null
+      //this.onComputedUpdate(val)
+    }  
+	const dep = new Dep()
+    Object.defineProperty(self.obj, self.key, {  
+      get () {
+	    Dep.target.push(onDepUpdated)
+	    if (val == null){	   
+		   val = self.cb() 
+           //this.onComputedUpdate(val)		   
+		}
+		Dep.target.pop()
+		dep.depend()
+	    printLog(`get ${self.obj.id} : ${self.key} : ${val}`) 
+        return val
+      },
+      set (newVal) {
+	    if (newVal != val){
+		  val = newVal
+		}
+		printLog(`set ${self.obj.id} : ${self.key} : ${val}`) 
+        dep.notify()
+      }
+    })
+  }
+}
+
+function addCalFunction(object)
+{
+	new Observable(object)
+	new Watcher(object, 'amount', 
+	  () => {	      
+		  amount = 0;
+		  if (object.childs.length > 0){
+			  for (var i in object.childs) {
+				 amount += object.childs[i].amount
+			  }
+		  }
+		  else{
+		     amount = object.qty * object.rate
+		  }
+		  return amount
+	   }, 
+	  (val) =>{
+		    printLog(`Amount是${val}`)
+	  }
+	)
+	new Watcher(object, 'adjAmount', 
+	  () => {
+	      adjAmount = 0
+		  if (object.childs.length > 0){
+			  for (var i in object.childs) {
+				 adjAmount += object.childs[i].adjAmount
+			  }
+		  }
+		  else{
+		     adjAmount = object.amount*object.adjRatio
+		  }
+		  return adjAmount 
+	   }, 
+	  (val) =>{
+		   printLog(`adjAmount是${val}`)
+	  }
+	)
+	new Watcher(object, 'markupAmount', 
+	  () => {
+	      markupAmount = 0
+		  if (object.childs.length > 0){
+			  for (var i in object.childs) {
+				 markupAmount += object.childs[i].markupAmount
+			  }
+		  }
+		  else{
+		     markupAmount = object.adjAmount*object.markupRatio
+		  }
+		  return markupAmount 
+	   }, 
+	  (val) =>{
+		   printLog(`markupAmount${val}`)
+	  }
+	)
+}
+
+var app = new Vue({
+    el:'#app',
+    data:{
+        BillItemList: []
+	}
+});
+
+var billitemRoot = {
+  id: 1,
+  pid: null,
+  qty: null,
+  rate: null,
+  amount: null,
+  adjRatio: null,
+  adjAmount: null,
+  markupRatio: null,
+  markupAmount: null,
+  childs: []
+}
+addCalFunction(billitemRoot);
+app.BillItemList.push(billitemRoot)
+
+var countX = 2;
+for (var i = 0; i < 10; ++i)
+{
+   var billitemLevelOne = {
+	  id: countX++,
+	  pid: null,
+	  qty: null,
+	  rate: null,
+	  amount:null,
+	  adjRatio: null,
+	  adjAmount: null,
+	  markupRatio: null,
+      markupAmount: null,
+	  childs: []
+   }
+   addCalFunction(billitemLevelOne)
+   billitemLevelOne.pid = billitemRoot.id
+   billitemRoot.childs.push(billitemLevelOne)
+   app.BillItemList.push(billitemLevelOne)
+   for (var j = 0; j < 10; ++j)
+   {
+	   var billitemLevelTwo = {
+		  id: countX++,
+		  pid: null,
+		  qty: null,
+		  rate: null,
+		  amount:null,
+		  adjRatio: null,
+		  adjAmount: null,
+		  markupRatio: null,
+          markupAmount: null,
+		  childs: []
+	   }
+	   billitemLevelTwo.pid = billitemLevelOne.id
+	   addCalFunction(billitemLevelTwo)
+	   billitemLevelOne.childs.push(billitemLevelTwo)
+	   app.BillItemList.push(billitemLevelTwo)
+	   for (var m = 0; m < 100; ++m)
+	   {
+		   var billitemLevelThree = {
+			  id: countX++,
+			  pid: null,
+			  qty: 0,
+			  rate: 0,
+			  amount:null,
+			  adjRatio: 1,
+			  adjAmount:null,
+			  markupRatio: 2,
+              markupAmount: null,
+			  childs: []
+		   }
+		   billitemLevelThree.rate = m;
+		   billitemLevelThree.qty = m;
+		   billitemLevelThree.pid = billitemLevelTwo.id
+		   addCalFunction(billitemLevelThree)
+		   billitemLevelTwo.childs.push(billitemLevelThree)
+		   app.BillItemList.push(billitemLevelThree)
+		}
+	}
+}
+</script>
+</body>
+</html>
